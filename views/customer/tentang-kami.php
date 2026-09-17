@@ -6,7 +6,8 @@
  *
  * @var array|null $user
  */
-layoutStart('Tentang Kami', $user);
+$pageTitle = 'Tentang Kami';
+include __DIR__ . '/../layout/header.php';
 ?>
 <style>
     .about-copy-section {
@@ -215,4 +216,4 @@ layoutStart('Tentang Kami', $user);
     <p>Kp. Seda Tengah, Ciharashas<br>Kecamatan Cilaku, Kabupaten Cianjur<br>Jawa Barat 43285</p>
 </section>
 
-<?php layoutEnd($user); ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

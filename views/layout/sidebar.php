@@ -6,6 +6,7 @@
  * @var array  $user
  * @var string $pageTitle
  */
+$user = $user ?? currentUser();
 $tab = $_GET['tab'] ?? 'overview';
 $isAdmin = $user['role'] === 'admin';
 $isOwner = $user['role'] === 'owner';

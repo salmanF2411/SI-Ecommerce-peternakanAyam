@@ -1594,3 +1594,115 @@ h3 { font-size: 1.25rem; }
 .btn-added {
     background: #21432a !important;
 }
+
+/* ─── Brand Mark & Logo Support ─────────────────────────────────────────── */
+.brand-mark {
+    display: inline-grid;
+    place-items: center;
+    background: var(--green);
+    color: #fff;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ─── Status Badges (High Contrast & Color Coded) ────────────────────────── */
+.status-badge,
+.status {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 4px 12px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: .3px !important;
+    white-space: nowrap !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    transition: var(--transition);
+}
+
+.status-badge::before,
+.status::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: currentColor !important;
+    opacity: .95 !important;
+    flex-shrink: 0 !important;
+}
+
+/* 1. Menunggu — Kuning / Amber */
+.status-menunggu,
+.status.menunggu,
+.status-badge.status-menunggu,
+.status-badge.menunggu,
+[class*="menunggu"] {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1.5px solid #f59e0b !important;
+}
+
+/* 2. Dikonfirmasi — Biru */
+.status-dikonfirmasi,
+.status.dikonfirmasi,
+.status-badge.status-dikonfirmasi,
+.status-badge.dikonfirmasi,
+[class*="dikonfirmasi"] {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+    border: 1.5px solid #3b82f6 !important;
+}
+
+/* 3. Diproses — Ungu / Violet */
+.status-diproses,
+.status.diproses,
+.status-badge.status-diproses,
+.status-badge.diproses,
+[class*="diproses"] {
+    background: #ede9fe !important;
+    color: #5b21b6 !important;
+    border: 1.5px solid #8b5cf6 !important;
+}
+
+/* 4. Selesai — Hijau Segar */
+.status-selesai,
+.status.selesai,
+.status-badge.status-selesai,
+.status-badge.selesai,
+[class*="selesai"] {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    border: 1.5px solid #22c55e !important;
+}
+
+/* 5. Dibatalkan — Merah / Rose */
+.status-dibatalkan,
+.status.dibatalkan,
+.status-badge.status-dibatalkan,
+.status-badge.dibatalkan,
+[class*="dibatalkan"] {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1.5px solid #ef4444 !important;
+}
+
+/* ─── Cart Disabled Button Helper ────────────────────────────────────────── */
+.disabled-btn {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed !important;
+}
+

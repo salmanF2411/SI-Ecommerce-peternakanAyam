@@ -4,6 +4,7 @@
  *
  * @var array|null $flash  Consumed from session
  */
+$flash = $flash ?? consumeFlash();
 if ($flash): ?>
 <div class="alert <?= e($flash['type']) ?>" role="alert" id="flash-alert">
     <?php if ($flash['type'] === 'success'): ?>

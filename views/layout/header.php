@@ -6,6 +6,7 @@
  * @var array|null $user
  * @var string     $pageTitle
  */
+$user = $user ?? currentUser();
 ?>
 <!doctype html>
 <html lang="id">
@@ -39,14 +40,19 @@
         </a>
 
         <!-- Desktop Navigation -->
+        <?php $currPage = $_GET['page'] ?? 'home'; ?>
         <nav class="site-nav" id="site-nav">
-            <a href="?page=home">Beranda</a>
-            <a href="?page=products">Produk</a>
-            <a href="?page=home#about">Tentang Kami</a>
+            <a href="?page=home" class="<?= $currPage === 'home' ? 'active' : '' ?>">Beranda</a>
+            <a href="?page=products" class="<?= $currPage === 'products' ? 'active' : '' ?>">Produk</a>
+            <a href="?page=about" class="<?= $currPage === 'about' ? 'active' : '' ?>">Tentang Kami</a>
             <a href="?page=home#how">Cara Pesan</a>
 
             <?php if ($user): ?>
-                <a href="?page=orders"><i class="fa fa-box-open"></i> Pesanan Saya</a>
+                <?php if ($user['role'] !== 'customer'): ?>
+                    <a href="?page=dashboard"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+                <?php else: ?>
+                    <a href="?page=orders" class="<?= $currPage === 'orders' ? 'active' : '' ?>"><i class="fa fa-box-open"></i> Pesanan Saya</a>
+                <?php endif; ?>
                 <form method="post" style="display:inline">
                     <input type="hidden" name="action" value="logout">
                     <button class="btn-nav-logout" type="submit">
@@ -54,14 +60,14 @@
                     </button>
                 </form>
             <?php else: ?>
-                <a href="?page=login" class="btn btn-outline btn-sm">
+                <a href="?page=login" class="btn btn-outline btn-sm <?= $currPage === 'login' ? 'active' : '' ?>">
                     <i class="fa fa-user"></i> Masuk
                 </a>
-                <a href="?page=register" class="btn btn-primary btn-sm">Daftar</a>
+                <a href="?page=register" class="btn btn-primary btn-sm <?= $currPage === 'register' ? 'active' : '' ?>">Daftar</a>
             <?php endif; ?>
 
             <!-- Cart -->
-            <a class="nav-cart" href="?page=cart">
+            <a class="nav-cart <?= $currPage === 'cart' ? 'active' : '' ?>" href="?page=cart">
                 <i class="fa fa-shopping-cart"></i>
                 <span class="badge"><?= cartCount() ?></span>
             </a>

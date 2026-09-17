@@ -91,7 +91,7 @@ include __DIR__ . '/../layout/header.php';
 
     <div class="product-grid">
         <?php foreach (array_slice($products, 0, 4) as $product):
-            include __DIR__ . '/../../views/customer/product-card.php';
+            include __DIR__ . '/product-card.php';
         endforeach; ?>
     </div>
 </section>

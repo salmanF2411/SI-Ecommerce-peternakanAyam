@@ -19,18 +19,17 @@ $pageTitle = 'Dashboard';
         <p>Pantau operasional Rumah Pitik dari satu ruang kerja.</p>
     </div>
     <?php if ($user['role'] === 'admin'): ?>
-    <a href="?page=dashboard&tab=products&new=1"
-       style="display:inline-flex;align-items:center;gap:8px;
+        <a href="?page=dashboard&tab=products&new=1" style="display:inline-flex;align-items:center;gap:8px;
               background:#2f5d3a;color:#fff;
               padding:10px 20px;border-radius:8px;
               font-weight:600;font-size:14px;text-decoration:none;
               border:2px solid #2f5d3a;
               transition:background .2s,box-shadow .2s;
               box-shadow:0 2px 8px rgba(47,93,58,.25)"
-       onmouseover="this.style.background='#1e3d26';this.style.boxShadow='0 4px 14px rgba(47,93,58,.4)'"
-       onmouseout="this.style.background='#2f5d3a';this.style.boxShadow='0 2px 8px rgba(47,93,58,.25)'">
-        <i class="fa fa-plus"></i> Tambah Produk
-    </a>
+            onmouseover="this.style.background='#1e3d26';this.style.boxShadow='0 4px 14px rgba(47,93,58,.4)'"
+            onmouseout="this.style.background='#2f5d3a';this.style.boxShadow='0 2px 8px rgba(47,93,58,.25)'">
+            <i class="fa fa-plus"></i> Tambah Produk
+        </a>
     <?php endif; ?>
 </div>
 
@@ -79,19 +78,22 @@ $pageTitle = 'Dashboard';
                 </thead>
                 <tbody>
                     <?php foreach ($recentOrders as $order): ?>
-                    <tr>
-                        <td><b><?= e($order['order_code']) ?></b></td>
-                        <td><?= e($order['name']) ?></td>
-                        <td><?= money($order['total']) ?></td>
-                        <td>
-                            <span class="status status-badge <?= statusClass($order['status']) ?> <?= strtolower(trim($order['status'])) ?>">
-                                <?= e($order['status']) ?>
-                            </span>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><b><?= e($order['order_code']) ?></b></td>
+                            <td><?= e($order['name']) ?></td>
+                            <td><?= money($order['total']) ?></td>
+                            <td>
+                                <span
+                                    class="status status-badge <?= statusClass($order['status']) ?> <?= strtolower(trim($order['status'])) ?>">
+                                    <?= e($order['status']) ?>
+                                </span>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                     <?php if (!$recentOrders): ?>
-                    <tr><td colspan="4" class="text-center text-muted" style="padding:24px">Belum ada pesanan</td></tr>
+                        <tr>
+                            <td colspan="4" class="text-center text-muted" style="padding:24px">Belum ada pesanan</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -105,15 +107,15 @@ $pageTitle = 'Dashboard';
             <a href="?page=dashboard&tab=stock" style="font-size:12px;color:var(--green)">Kelola stok →</a>
         </div>
         <?php foreach ($lowStock as $item): ?>
-        <div class="stock-row">
-            <span><?= e($item['name']) ?></span>
-            <b class="<?= $item['stock'] <= 10 ? 'low' : '' ?>">
-                <?= $item['stock'] ?> <?= e($item['unit']) ?>
-            </b>
-        </div>
+            <div class="stock-row">
+                <span><?= e($item['name']) ?></span>
+                <b class="<?= $item['stock'] <= 10 ? 'low' : '' ?>">
+                    <?= $item['stock'] ?>     <?= e($item['unit']) ?>
+                </b>
+            </div>
         <?php endforeach; ?>
         <?php if (!$lowStock): ?>
-        <p class="text-muted text-center" style="padding:24px 0">Semua stok aman</p>
+            <p class="text-muted text-center" style="padding:24px 0">Semua stok aman</p>
         <?php endif; ?>
     </div>
 

@@ -87,8 +87,7 @@ layoutStart('Tentang Kami', $user);
         <a class="button primary" href="?page=products">Lihat produk <span>→</span></a>
     </div>
     <div class="hero-image">
-        <img
-            src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=85"
+        <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=85"
             alt="Peternakan ayam CV Rumah Pitik">
     </div>
 </section>
@@ -197,7 +196,8 @@ layoutStart('Tentang Kami', $user);
         <h2>Memudahkan informasi dan proses pemesanan.</h2>
     </div>
     <div>
-        <p>CV Rumah Pitik melalui pengembangan sistem berbasis web berupaya memberikan kemudahan dalam penyampaian informasi produk dan proses pemesanan.</p>
+        <p>CV Rumah Pitik melalui pengembangan sistem berbasis web berupaya memberikan kemudahan dalam penyampaian
+            informasi produk dan proses pemesanan.</p>
         <ul>
             <li>Meningkatkan efisiensi proses pembelian</li>
             <li>Memperluas jangkauan pemasaran</li>

@@ -9,11 +9,7 @@
 <article class="product-card">
     <a href="?page=product&id=<?= $product['id'] ?>">
         <div class="product-image">
-            <img
-                src="<?= e(productImage($product['image'])) ?>"
-                alt="<?= e($product['name']) ?>"
-                loading="lazy"
-            >
+            <img src="<?= e(productImage($product['image'])) ?>" alt="<?= e($product['name']) ?>" loading="lazy">
             <span class="product-badge"><?= e($product['category_name']) ?></span>
         </div>
         <div class="product-info">

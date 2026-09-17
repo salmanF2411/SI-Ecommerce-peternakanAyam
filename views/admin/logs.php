@@ -22,25 +22,25 @@
     </div>
 
     <?php foreach ($logs as $log): ?>
-    <div class="log-row">
-        <div class="log-dot"></div>
-        <div class="log-row-content">
-            <b><?= e($log['activity']) ?></b>
-            <small>
-                <i class="fa fa-user" style="margin-right:4px;color:var(--green)"></i>
-                <?= e($log['name'] ?? 'Sistem') ?>
-                &nbsp;·&nbsp;
-                <i class="fa fa-clock" style="margin-right:4px"></i>
-                <?= dateId($log['created_at']) ?>
-            </small>
+        <div class="log-row">
+            <div class="log-dot"></div>
+            <div class="log-row-content">
+                <b><?= e($log['activity']) ?></b>
+                <small>
+                    <i class="fa fa-user" style="margin-right:4px;color:var(--green)"></i>
+                    <?= e($log['name'] ?? 'Sistem') ?>
+                    &nbsp;·&nbsp;
+                    <i class="fa fa-clock" style="margin-right:4px"></i>
+                    <?= dateId($log['created_at']) ?>
+                </small>
+            </div>
         </div>
-    </div>
     <?php endforeach; ?>
 
     <?php if (!$logs): ?>
-    <div class="empty-state" style="border:0;padding:40px 0">
-        <i class="fa fa-history"></i>
-        <h3>Belum ada aktivitas tercatat</h3>
-    </div>
+        <div class="empty-state" style="border:0;padding:40px 0">
+            <i class="fa fa-history"></i>
+            <h3>Belum ada aktivitas tercatat</h3>
+        </div>
     <?php endif; ?>
 </div>

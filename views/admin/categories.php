@@ -19,25 +19,25 @@
 <div class="report-grid" style="align-items:start">
     <!-- Form Tambah Kategori -->
     <?php if ($user['role'] === 'admin'): ?>
-    <div class="panel">
-        <div class="panel-header">
-            <h2><i class="fa fa-folder-plus" style="color:var(--green);margin-right:8px"></i>Tambah Kategori</h2>
+        <div class="panel">
+            <div class="panel-header">
+                <h2><i class="fa fa-folder-plus" style="color:var(--green);margin-right:8px"></i>Tambah Kategori</h2>
+            </div>
+            <form method="post">
+                <input type="hidden" name="action" value="save_category">
+                <div class="form-group">
+                    <label class="form-label">Nama Kategori</label>
+                    <input class="form-control" type="text" name="name" placeholder="Contoh: Pakan Ternak" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Slug URL (Opsional)</label>
+                    <input class="form-control" type="text" name="slug" placeholder="otomatis jika kosong">
+                </div>
+                <button class="btn btn-primary" type="submit">
+                    <i class="fa fa-save"></i> Simpan Kategori
+                </button>
+            </form>
         </div>
-        <form method="post">
-            <input type="hidden" name="action" value="save_category">
-            <div class="form-group">
-                <label class="form-label">Nama Kategori</label>
-                <input class="form-control" type="text" name="name" placeholder="Contoh: Pakan Ternak" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Slug URL (Opsional)</label>
-                <input class="form-control" type="text" name="slug" placeholder="otomatis jika kosong">
-            </div>
-            <button class="btn btn-primary" type="submit">
-                <i class="fa fa-save"></i> Simpan Kategori
-            </button>
-        </form>
-    </div>
     <?php endif; ?>
 
     <!-- Daftar Kategori -->
@@ -58,21 +58,22 @@
                 </thead>
                 <tbody>
                     <?php foreach ($categories as $i => $cat): ?>
-                    <tr>
-                        <td><?= $i + 1 ?></td>
-                        <td><b><?= e($cat['name']) ?></b></td>
-                        <td><code><?= e($cat['slug']) ?></code></td>
-                        <td>
-                            <span class="badge" style="background:var(--cream);color:var(--dark);padding:4px 10px;border-radius:12px;font-weight:600">
-                                <?= $cat['product_count'] ?? 0 ?> produk
-                            </span>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><?= $i + 1 ?></td>
+                            <td><b><?= e($cat['name']) ?></b></td>
+                            <td><code><?= e($cat['slug']) ?></code></td>
+                            <td>
+                                <span class="badge"
+                                    style="background:var(--cream);color:var(--dark);padding:4px 10px;border-radius:12px;font-weight:600">
+                                    <?= $cat['product_count'] ?? 0 ?> produk
+                                </span>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                     <?php if (!$categories): ?>
-                    <tr>
-                        <td colspan="4" class="text-center text-muted" style="padding:24px">Belum ada kategori</td>
-                    </tr>
+                        <tr>
+                            <td colspan="4" class="text-center text-muted" style="padding:24px">Belum ada kategori</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>

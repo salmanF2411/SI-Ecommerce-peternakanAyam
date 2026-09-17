@@ -37,41 +37,41 @@
             </thead>
             <tbody>
                 <?php foreach ($stockReport as $row): ?>
-                <?php
-                $statusText = 'Tersedia';
-                $statusCls  = 'status-selesai';
-                if ($row['stock'] == 0) {
-                    $statusText = 'Habis';
-                    $statusCls  = 'status-dibatalkan';
-                } elseif ($row['stock'] <= 10) {
-                    $statusText = 'Menipis';
-                    $statusCls  = 'status-menunggu';
-                }
-                ?>
-                <tr>
-                    <td><b><?= e($row['name']) ?></b></td>
-                    <td><?= e($row['category_name']) ?></td>
-                    <td style="color:var(--green);font-weight:700">
-                        +<?= $row['total_masuk'] ?? 0 ?>
-                    </td>
-                    <td style="color:var(--red);font-weight:700">
-                        -<?= $row['total_keluar'] ?? 0 ?>
-                    </td>
-                    <td><b style="font-size:16px"><?= $row['stock'] ?></b></td>
-                    <td><?= e($row['unit']) ?></td>
-                    <td>
-                        <span class="status-badge <?= $statusCls ?>">
-                            <?= $statusText ?>
-                        </span>
-                    </td>
-                </tr>
+                    <?php
+                    $statusText = 'Tersedia';
+                    $statusCls = 'status-selesai';
+                    if ($row['stock'] == 0) {
+                        $statusText = 'Habis';
+                        $statusCls = 'status-dibatalkan';
+                    } elseif ($row['stock'] <= 10) {
+                        $statusText = 'Menipis';
+                        $statusCls = 'status-menunggu';
+                    }
+                    ?>
+                    <tr>
+                        <td><b><?= e($row['name']) ?></b></td>
+                        <td><?= e($row['category_name']) ?></td>
+                        <td style="color:var(--green);font-weight:700">
+                            +<?= $row['total_masuk'] ?? 0 ?>
+                        </td>
+                        <td style="color:var(--red);font-weight:700">
+                            -<?= $row['total_keluar'] ?? 0 ?>
+                        </td>
+                        <td><b style="font-size:16px"><?= $row['stock'] ?></b></td>
+                        <td><?= e($row['unit']) ?></td>
+                        <td>
+                            <span class="status-badge <?= $statusCls ?>">
+                                <?= $statusText ?>
+                            </span>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
                 <?php if (!$stockReport): ?>
-                <tr>
-                    <td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">
-                        Belum ada data stok
-                    </td>
-                </tr>
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">
+                            Belum ada data stok
+                        </td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>

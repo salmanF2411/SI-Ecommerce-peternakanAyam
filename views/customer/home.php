@@ -16,7 +16,8 @@ include __DIR__ . '/../layout/header.php';
     <div class="hero-copy">
         <span class="eyebrow">DARI KANDANG, UNTUK KELUARGA</span>
         <h1>Segar, dekat, <em>dan apa adanya.</em></h1>
-        <p>Ayam, telur, dan pupuk pilihan dari Rumah Pitik. Dikelola dengan perhatian, untuk kebutuhan sehari-hari Anda.</p>
+        <p>Ayam, telur, dan pupuk pilihan dari Rumah Pitik. Dikelola dengan perhatian, untuk kebutuhan sehari-hari Anda.
+        </p>
         <div class="hero-actions">
             <a class="btn btn-primary btn-lg" href="?page=products">
                 <i class="fa fa-store"></i> Jelajahi Produk
@@ -27,11 +28,8 @@ include __DIR__ . '/../layout/header.php';
         </div>
     </div>
     <div class="hero-image">
-        <img
-            src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=85"
-            alt="Peternakan ayam Rumah Pitik"
-            loading="eager"
-        >
+        <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=85"
+            alt="Peternakan ayam Rumah Pitik" loading="eager">
     </div>
 </section>
 
@@ -61,22 +59,22 @@ include __DIR__ . '/../layout/header.php';
     <div class="category-items">
         <?php
         $catIcons = [
-            'Ayam Hidup'  => '<i class="fa fa-dove"></i>',
+            'Ayam Hidup' => '<i class="fa fa-dove"></i>',
             'Ayam Potong' => '<i class="fa fa-drumstick-bite"></i>',
-            'Pupuk'       => '<i class="fa fa-leaf"></i>',
-            'Telur'       => '<i class="fa fa-egg"></i>',
+            'Pupuk' => '<i class="fa fa-leaf"></i>',
+            'Telur' => '<i class="fa fa-egg"></i>',
         ];
         foreach ($categories as $cat):
-        ?>
-        <a class="category-item" href="?page=products&category=<?= e($cat['slug']) ?>">
-            <div class="cat-icon">
-                <?= $catIcons[$cat['name']] ?? '<i class="fa fa-box"></i>' ?>
-            </div>
-            <div>
-                <b><?= e($cat['name']) ?></b>
-                <small>Jelajahi pilihan <i class="fa fa-arrow-right" style="font-size:9px"></i></small>
-            </div>
-        </a>
+            ?>
+            <a class="category-item" href="?page=products&category=<?= e($cat['slug']) ?>">
+                <div class="cat-icon">
+                    <?= $catIcons[$cat['name']] ?? '<i class="fa fa-box"></i>' ?>
+                </div>
+                <div>
+                    <b><?= e($cat['name']) ?></b>
+                    <small>Jelajahi pilihan <i class="fa fa-arrow-right" style="font-size:9px"></i></small>
+                </div>
+            </a>
         <?php endforeach; ?>
     </div>
 </section>

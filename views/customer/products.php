@@ -21,13 +21,8 @@ include __DIR__ . '/../layout/header.php';
     <!-- Search Form -->
     <form class="search-form" method="get" style="margin-top:24px">
         <input type="hidden" name="page" value="products">
-        <input
-            type="search"
-            name="search"
-            value="<?= e($search) ?>"
-            placeholder="Cari ayam, telur, pupuk..."
-            aria-label="Cari produk"
-        >
+        <input type="search" name="search" value="<?= e($search) ?>" placeholder="Cari ayam, telur, pupuk..."
+            aria-label="Cari produk">
         <button type="submit">
             <i class="fa fa-search"></i> Cari
         </button>
@@ -40,28 +35,26 @@ include __DIR__ . '/../layout/header.php';
         Semua
     </a>
     <?php foreach ($categories as $cat): ?>
-    <a
-        class="filter-btn <?= $category === $cat['slug'] ? 'active' : '' ?>"
-        href="?page=products&category=<?= e($cat['slug']) ?><?= $search ? '&search=' . e($search) : '' ?>"
-    >
-        <?= e($cat['name']) ?>
-    </a>
+        <a class="filter-btn <?= $category === $cat['slug'] ? 'active' : '' ?>"
+            href="?page=products&category=<?= e($cat['slug']) ?><?= $search ? '&search=' . e($search) : '' ?>">
+            <?= e($cat['name']) ?>
+        </a>
     <?php endforeach; ?>
 </div>
 
 <!-- ── Products Grid ──────────────────────────────────────────────── -->
 <?php if ($products): ?>
-<div class="product-grid catalog-grid">
-    <?php foreach ($products as $product):
-        include __DIR__ . '/product-card.php';
-    endforeach; ?>
-</div>
+    <div class="product-grid catalog-grid">
+        <?php foreach ($products as $product):
+            include __DIR__ . '/product-card.php';
+        endforeach; ?>
+    </div>
 <?php else: ?>
-<div class="empty-state">
-    <i class="fa fa-box-open"></i>
-    <h3>Produk tidak ditemukan</h3>
-    <p>Coba kata kunci lain atau <a href="?page=products">lihat semua produk</a>.</p>
-</div>
+    <div class="empty-state">
+        <i class="fa fa-box-open"></i>
+        <h3>Produk tidak ditemukan</h3>
+        <p>Coba kata kunci lain atau <a href="?page=products">lihat semua produk</a>.</p>
+    </div>
 <?php endif; ?>
 
 <div style="height:80px"></div>

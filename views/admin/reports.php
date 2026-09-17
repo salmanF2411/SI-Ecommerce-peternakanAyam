@@ -29,7 +29,7 @@
             <label class="form-label">Periode</label>
             <select class="form-control" name="period" id="report-period">
                 <option value="bulanan" <?= $period === 'bulanan' ? 'selected' : '' ?>>Bulanan</option>
-                <option value="harian"  <?= $period === 'harian'  ? 'selected' : '' ?>>Harian</option>
+                <option value="harian" <?= $period === 'harian' ? 'selected' : '' ?>>Harian</option>
                 <option value="tahunan" <?= $period === 'tahunan' ? 'selected' : '' ?>>Tahunan</option>
             </select>
         </div>
@@ -100,29 +100,29 @@
             </thead>
             <tbody>
                 <?php foreach ($monthly as $row): ?>
-                <tr>
-                    <td><b><?= e($row['period']) ?></b></td>
-                    <td><?= $row['transactions'] ?> pesanan</td>
-                    <td><?= $row['items_sold'] ?? '-' ?></td>
-                    <td><b style="color:var(--green)"><?= money($row['revenue']) ?></b></td>
-                </tr>
+                    <tr>
+                        <td><b><?= e($row['period']) ?></b></td>
+                        <td><?= $row['transactions'] ?> pesanan</td>
+                        <td><?= $row['items_sold'] ?? '-' ?></td>
+                        <td><b style="color:var(--green)"><?= money($row['revenue']) ?></b></td>
+                    </tr>
                 <?php endforeach; ?>
                 <?php if (!$monthly): ?>
-                <tr>
-                    <td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">
-                        Belum ada data transaksi selesai
-                    </td>
-                </tr>
+                    <tr>
+                        <td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">
+                            Belum ada data transaksi selesai
+                        </td>
+                    </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 
     <?php if ($monthly): ?>
-    <div style="margin-top:20px;display:flex;gap:10px">
-        <button class="btn btn-outline btn-sm" onclick="window.print()">
-            <i class="fa fa-print"></i> Cetak
-        </button>
-    </div>
+        <div style="margin-top:20px;display:flex;gap:10px">
+            <button class="btn btn-outline btn-sm" onclick="window.print()">
+                <i class="fa fa-print"></i> Cetak
+            </button>
+        </div>
     <?php endif; ?>
 </div>

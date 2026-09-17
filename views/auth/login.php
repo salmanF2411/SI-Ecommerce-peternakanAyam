@@ -23,28 +23,14 @@ include __DIR__ . '/../layout/header.php';
 
             <div class="form-group">
                 <label class="form-label" for="login-email">Email</label>
-                <input
-                    class="form-control"
-                    type="email"
-                    id="login-email"
-                    name="email"
-                    placeholder="nama@email.com"
-                    autocomplete="email"
-                    required
-                >
+                <input class="form-control" type="email" id="login-email" name="email" placeholder="nama@email.com"
+                    autocomplete="email" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label" for="login-password">Password</label>
-                <input
-                    class="form-control"
-                    type="password"
-                    id="login-password"
-                    name="password"
-                    placeholder="••••••••"
-                    autocomplete="current-password"
-                    required
-                >
+                <input class="form-control" type="password" id="login-password" name="password" placeholder="••••••••"
+                    autocomplete="current-password" required>
             </div>
 
             <button class="btn btn-primary btn-full" type="submit" style="margin-top:8px">

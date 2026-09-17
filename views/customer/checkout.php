@@ -25,37 +25,19 @@ include __DIR__ . '/../layout/header.php';
 
         <div class="form-group">
             <label class="form-label" for="co-name">Nama penerima</label>
-            <input
-                class="form-control"
-                type="text"
-                id="co-name"
-                name="customer_name"
-                value="<?= e($user['name']) ?>"
-                required
-            >
+            <input class="form-control" type="text" id="co-name" name="customer_name" value="<?= e($user['name']) ?>"
+                required>
         </div>
 
         <div class="form-group">
             <label class="form-label" for="co-phone">Nomor telepon</label>
-            <input
-                class="form-control"
-                type="tel"
-                id="co-phone"
-                name="phone"
-                value="<?= e($user['phone']) ?>"
-                required
-            >
+            <input class="form-control" type="tel" id="co-phone" name="phone" value="<?= e($user['phone']) ?>" required>
         </div>
 
         <div class="form-group">
             <label class="form-label" for="co-address">Alamat pengiriman</label>
-            <textarea
-                class="form-control"
-                id="co-address"
-                name="address"
-                rows="4"
-                required
-            ><?= e($user['address']) ?></textarea>
+            <textarea class="form-control" id="co-address" name="address" rows="4"
+                required><?= e($user['address']) ?></textarea>
         </div>
 
         <div class="form-group">
@@ -72,14 +54,10 @@ include __DIR__ . '/../layout/header.php';
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="co-notes">Catatan <span style="font-weight:400;color:var(--muted)">(opsional)</span></label>
-            <textarea
-                class="form-control"
-                id="co-notes"
-                name="notes"
-                rows="3"
-                placeholder="Contoh: kirim pagi hari, hubungi sebelum antar..."
-            ></textarea>
+            <label class="form-label" for="co-notes">Catatan <span
+                    style="font-weight:400;color:var(--muted)">(opsional)</span></label>
+            <textarea class="form-control" id="co-notes" name="notes" rows="3"
+                placeholder="Contoh: kirim pagi hari, hubungi sebelum antar..."></textarea>
         </div>
 
         <button class="btn btn-primary btn-full btn-lg" type="submit">
@@ -92,10 +70,10 @@ include __DIR__ . '/../layout/header.php';
         <h3><i class="fa fa-receipt" style="color:var(--green);margin-right:8px"></i>Ringkasan Pesanan</h3>
 
         <?php foreach ($items as $item): ?>
-        <div class="summary-row">
-            <span><?= $item['quantity'] ?> × <?= e($item['product']['name']) ?></span>
-            <b><?= money($item['subtotal']) ?></b>
-        </div>
+            <div class="summary-row">
+                <span><?= $item['quantity'] ?> × <?= e($item['product']['name']) ?></span>
+                <b><?= money($item['subtotal']) ?></b>
+            </div>
         <?php endforeach; ?>
 
         <div class="summary-row summary-total" style="margin-top:8px">

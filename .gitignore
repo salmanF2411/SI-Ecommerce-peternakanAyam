@@ -3,3 +3,6 @@ uploads/
 PRD.md
 tentang-kami.md
 schema.sql
+composer.json
+composer.lock
+vendor/

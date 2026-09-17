@@ -103,7 +103,7 @@
                     <tr>
                         <td><b><?= e($row['period']) ?></b></td>
                         <td><?= $row['transactions'] ?> pesanan</td>
-                        <td><?= $row['items_sold'] ?? '-' ?></td>
+                        <td><?= isset($row['items_sold']) ? (int)$row['items_sold'] . ' unit' : '-' ?></td>
                         <td><b style="color:var(--green)"><?= money($row['revenue']) ?></b></td>
                     </tr>
                 <?php endforeach; ?>
@@ -120,9 +120,11 @@
 
     <?php if ($monthly): ?>
         <div style="margin-top:20px;display:flex;gap:10px">
-            <button class="btn btn-outline btn-sm" onclick="window.print()">
-                <i class="fa fa-print"></i> Cetak
-            </button>
+            <a class="btn btn-outline btn-sm"
+               href="?page=export-sales&period=<?= urlencode($period) ?>&date_from=<?= urlencode($dateFrom) ?>&date_to=<?= urlencode($dateTo) ?>"
+               title="Unduh laporan penjualan sebagai file Excel">
+                <i class="fa fa-file-excel" style="color:#1d6f42"></i> Ekspor Excel
+            </a>
         </div>
     <?php endif; ?>
 </div>

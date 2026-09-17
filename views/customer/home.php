@@ -22,7 +22,7 @@ include __DIR__ . '/../layout/header.php';
             <a class="btn btn-primary btn-lg" href="?page=products">
                 <i class="fa fa-store"></i> Jelajahi Produk
             </a>
-            <a class="btn btn-outline btn-lg" href="?page=home#about">
+            <a class="btn btn-outline btn-lg" href="?page=about">
                 Tentang Kami
             </a>
         </div>

@@ -102,6 +102,12 @@ $isOwner = $user['role'] === 'owner';
         </nav>
 
         <div class="sidebar-divider"></div>
+        <a href="?page=home" target="_blank" rel="noopener" title="Buka halaman toko di tab baru">
+            <i class="fa fa-store"></i> Lihat Toko
+            <i class="fa fa-external-link-alt" style="font-size:10px;margin-left:auto;opacity:.6"></i>
+        </a>
+
+        <div class="sidebar-divider"></div>
         <form method="post">
             <input type="hidden" name="action" value="logout">
             <button class="btn-sidebar-logout" type="submit">

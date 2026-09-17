@@ -18,9 +18,11 @@
 <div class="panel">
     <div class="panel-header">
         <h2>Ringkasan Stok Produk</h2>
-        <button class="btn btn-outline btn-sm" onclick="window.print()">
-            <i class="fa fa-print"></i> Cetak
-        </button>
+        <a class="btn btn-outline btn-sm"
+           href="?page=export-stock"
+           title="Unduh laporan stok sebagai file Excel">
+            <i class="fa fa-file-excel" style="color:#1d6f42"></i> Ekspor Excel
+        </a>
     </div>
     <div class="table-wrap">
         <table class="data-table">

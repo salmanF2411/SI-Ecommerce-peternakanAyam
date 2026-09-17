@@ -21,7 +21,7 @@
         <b>Jelajahi</b>
         <a href="?page=home">Beranda</a>
         <a href="?page=products">Katalog Produk</a>
-        <a href="?page=home#about">Tentang Kami</a>
+        <a href="?page=about">Tentang Kami</a>
         <a href="?page=home#how">Cara Pemesanan</a>
     </div>
 

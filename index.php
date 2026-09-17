@@ -44,26 +44,71 @@ if ($action === 'logout') {
     redirect('?page=home');
 }
 if ($action === 'add_cart') {
+    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+        || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+
     $user = currentUser();
     if (!$user) {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'ok'             => false,
+                'requires_login' => true,
+                'message'        => 'Silakan masuk (login) ke akun Anda terlebih dahulu untuk menambahkan produk ke keranjang.',
+                'redirect'       => '?page=login',
+            ]);
+            exit;
+        }
         flash('warning', 'Silakan masuk (login) ke akun Anda terlebih dahulu untuk menambahkan produk ke keranjang.');
         redirect('?page=login');
     }
-    $id = (int) $_POST['product_id'];
-    $quantity = max(1, (int) $_POST['quantity']);
-    $stmt = db()->prepare('SELECT stock FROM products WHERE id = ? AND is_active = 1');
+
+    $id       = (int) ($_POST['product_id'] ?? 0);
+    $quantity = max(1, (int) ($_POST['quantity'] ?? 1));
+
+    $stmt = db()->prepare('SELECT * FROM products WHERE id = ? AND is_active = 1');
     $stmt->execute([$id]);
     $product = $stmt->fetch();
-    if (!$product || !$product['stock']) {
+
+    if (!$product || (int) $product['stock'] <= 0) {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'ok'      => false,
+                'message' => 'Produk sedang habis atau tidak tersedia.',
+            ]);
+            exit;
+        }
         flash('danger', 'Produk sedang habis.');
-    } else {
-        $cart = getCart();
-        $currentQty = (int) ($cart[$id] ?? 0);
-        $cart[$id] = min($currentQty + $quantity, (int) $product['stock']);
-        saveCart($cart);
-        flash('success', 'Produk masuk ke keranjang.');
+        redirect($_POST['redirect'] ?? ('?page=product&id=' . $id));
     }
-    redirect($_POST['redirect'] ?? '?page=cart');
+
+    $cart       = getCart();
+    $currentQty = (int) ($cart[$id] ?? 0);
+    $maxStock   = (int) $product['stock'];
+    $newQty     = min($currentQty + $quantity, $maxStock);
+    $cart[$id]  = $newQty;
+    saveCart($cart);
+
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'ok'           => true,
+            'message'      => 'Berhasil menambahkan ' . $product['name'] . ' ke keranjang.',
+            'product_name' => $product['name'],
+            'added_qty'    => $quantity,
+            'total_qty'    => $newQty,
+            'cartCount'    => cartCount(),
+            'cartTotal'    => money(cartTotal()),
+        ]);
+        exit;
+    }
+
+    flash('success', 'Produk masuk ke keranjang.');
+    $redirectUrl = !empty($_POST['redirect']) && $_POST['redirect'] !== '?page=cart'
+        ? $_POST['redirect']
+        : ('?page=product&id=' . $id);
+    redirect($redirectUrl);
 }
 if ($action === 'update_cart') {
     $user = currentUser();
@@ -248,6 +293,7 @@ function layoutStart(string $title, ?array $user = null): void
         <title><?= e($title) ?> | Rumah Pitik</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <link rel="stylesheet" href="assets/style.css?v=<?= filemtime(__DIR__ . '/assets/style.css') ?>">
         <style>
             .brand-mark {
@@ -383,37 +429,121 @@ function layoutStart(string $title, ?array $user = null): void
         <script defer src="assets/app.js"></script>
     </head>
 
-    <body class="<?= $user && $user['role'] !== 'customer' ? 'staff-page' : 'customer-page' ?>"><?php if ($user && $user['role'] !== 'customer'): ?><aside class="sidebar"><a class="brand" href="?page=dashboard"><span class="brand-mark"><img src="assets/image/logo.png" alt="Logo Rumah Pitik"></span><span>Rumah<br><b>Pitik</b></span></a><small>RUANG KERJA <?= strtoupper($user['role']) ?></small>
-                <?php $adminTab = $_GET['tab'] ?? 'overview'; ?>
-                <nav><a class="<?= $page === 'dashboard' && $adminTab === 'overview' ? 'active' : '' ?>" href="?page=dashboard">⌂ Dashboard</a><a class="<?= $page === 'dashboard' && $adminTab === 'products' ? 'active' : '' ?>" href="?page=dashboard&tab=products">▦ Produk</a><a class="<?= $page === 'dashboard' && $adminTab === 'orders' ? 'active' : '' ?>" href="?page=dashboard&tab=orders">◷ Pesanan</a><a class="<?= $page === 'dashboard' && $adminTab === 'reports' ? 'active' : '' ?>" href="?page=dashboard&tab=reports">▤ Laporan</a><a class="<?= $page === 'dashboard' && $adminTab === 'logs' ? 'active' : '' ?>" href="?page=dashboard&tab=logs">◌ Aktivitas</a></nav>
-                <form method="post"><input type="hidden" name="action" value="logout"><button class="nav-logout">Keluar</button></form>
-            </aside>
-            <main class="app-main">
-                <header class="app-header"><span><?= date('l, d F Y') ?></span><strong><?= e($user['name']) ?></strong></header><?php else: ?><header class="site-header"><a class="brand" href="?page=home"><span class="brand-mark"><img src="assets/image/logo.png" alt="Logo Rumah Pitik"></span><span>Rumah <b>Pitik</b></span></a><button class="menu-toggle">Menu</button>
-                    <nav><a class="<?= $page === 'home' ? 'active' : '' ?>" href="?page=home">Beranda</a><a class="<?= $page === 'products' ? 'active' : '' ?>" href="?page=products">Produk</a><a class="<?= $page === 'about' ? 'active' : '' ?>" href="?page=about">Tentang Kami</a><a href="?page=home#how">Cara Pesan</a><?php if ($user): ?><a class="<?= $page === 'orders' ? 'active' : '' ?>" href="?page=orders">Pesanan Saya</a>
-                            <form method="post"><input type="hidden" name="action" value="logout"><button class="link-button">Keluar</button></form><?php else: ?><a href="?page=login">Masuk</a><?php endif; ?><a class="cart-link <?= $page === 'cart' ? 'active' : '' ?>" href="?page=cart">🛒 <span><?= cartCount() ?></span></a>
-                    </nav>
-                </header><?php endif; ?><div class="page-wrap"><?php if ($flash): ?><div class="alert <?= e($flash['type']) ?>"><?= e($flash['message']) ?></div><?php endif; ?><?php }
-                                                                                                                                                                            function layoutEnd(?array $user = null): void
-                                                                                                                                                                            {
-                                                                                                                                                                                if ($user && $user['role'] !== 'customer') echo '</div></main>';
-                                                                                                                                                                                else echo '</div><footer><div><a class="brand" href="?page=home"><span class="brand-mark"><img src="assets/image/logo.png" alt="Logo Rumah Pitik"></span><span>Rumah <b>Pitik</b></span></a><p>Produk segar dari peternakan dan kebun<br>untuk keluarga Indonesia.</p></div><div><b>Jelajahi</b><a href="?page=products">Katalog produk</a><a href="?page=about">Tentang Kami</a><a href="?page=home#how">Cara pesan</a></div><div><b>Hubungi kami</b><span>WhatsApp 0812-3456-7890</span><span>Senin - Sabtu, 08.00 - 17.00</span></div></footer>';
-                                                                                                                                                                                echo '</body></html>';
-                                                                                                                                                                            }
+    <body class="<?= $user && $user['role'] !== 'customer' ? 'staff-page' : 'customer-page' ?>">
+    <?php if ($user && $user['role'] !== 'customer'): ?>
+        <aside class="sidebar">
+            <a class="brand" href="?page=dashboard">
+                <span class="brand-mark"><img src="assets/image/logo.png" alt="Logo Rumah Pitik"></span>
+                <span>Rumah<br><b>Pitik</b></span>
+            </a>
+            <small>RUANG KERJA <?= strtoupper($user['role']) ?></small>
+            <?php $adminTab = $_GET['tab'] ?? 'overview'; ?>
+            <nav>
+                <a class="<?= $page === 'dashboard' && $adminTab === 'overview' ? 'active' : '' ?>" href="?page=dashboard">⌂ Dashboard</a>
+                <a class="<?= $page === 'dashboard' && $adminTab === 'products' ? 'active' : '' ?>" href="?page=dashboard&tab=products">▦ Produk</a>
+                <a class="<?= $page === 'dashboard' && $adminTab === 'orders' ? 'active' : '' ?>" href="?page=dashboard&tab=orders">◷ Pesanan</a>
+                <a class="<?= $page === 'dashboard' && $adminTab === 'reports' ? 'active' : '' ?>" href="?page=dashboard&tab=reports">▤ Laporan</a>
+                <a class="<?= $page === 'dashboard' && $adminTab === 'logs' ? 'active' : '' ?>" href="?page=dashboard&tab=logs">◌ Aktivitas</a>
+            </nav>
+            <form method="post"><input type="hidden" name="action" value="logout"><button class="nav-logout">Keluar</button></form>
+        </aside>
+        <main class="app-main">
+            <header class="app-header">
+                <span><?= date('l, d F Y') ?></span>
+                <strong><?= e($user['name']) ?></strong>
+            </header>
+    <?php else: ?>
+        <header class="site-header">
+            <a class="brand" href="?page=home">
+                <span class="brand-mark"><img src="assets/image/logo.png" alt="Logo Rumah Pitik"></span>
+                <span>Rumah <b>Pitik</b></span>
+            </a>
+            <button class="menu-toggle">Menu</button>
+            <nav>
+                <a class="<?= $page === 'home' ? 'active' : '' ?>" href="?page=home">Beranda</a>
+                <a class="<?= $page === 'products' ? 'active' : '' ?>" href="?page=products">Produk</a>
+                <a class="<?= $page === 'about' ? 'active' : '' ?>" href="?page=about">Tentang Kami</a>
+                <a href="?page=home#how">Cara Pesan</a>
+                <?php if ($user): ?>
+                    <a class="<?= $page === 'orders' ? 'active' : '' ?>" href="?page=orders">Pesanan Saya</a>
+                    <form method="post"><input type="hidden" name="action" value="logout"><button class="link-button">Keluar</button></form>
+                <?php else: ?>
+                    <a href="?page=login">Masuk</a>
+                <?php endif; ?>
+                <a class="cart-link <?= $page === 'cart' ? 'active' : '' ?>" href="?page=cart">🛒 <span><?= cartCount() ?></span></a>
+            </nav>
+        </header>
+    <?php endif; ?>
 
-                                                                                                                                                                            if ($page === 'login' || $page === 'register') {
-                                                                                                                                                                                layoutStart($page === 'login' ? 'Masuk' : 'Daftar'); ?><section class="auth-shell">
-                        <div class="auth-copy"><span class="eyebrow">RUMAH PITIK</span>
-                            <h1><?= $page === 'login' ? 'Selamat datang kembali.' : 'Mulai belanja lebih mudah.' ?></h1>
-                            <p>Akses katalog segar, pesanan, dan informasi stok dalam satu tempat.</p>
-                        </div>
-                        <form class="auth-card" method="post">
-                            <h2><?= $page === 'login' ? 'Masuk ke akun' : 'Buat akun pelanggan' ?></h2><input type="hidden" name="action" value="<?= $page ?>"><?php if ($page === 'register'): ?><label>Nama lengkap<input required name="name"></label><label>Nomor telepon<input required name="phone"></label><label>Alamat<textarea required name="address" rows="3"></textarea></label><?php endif; ?><label>Email<input required type="email" name="email"></label><label>Password<input required type="password" name="password"></label><button class="button primary wide"><?= $page === 'login' ? 'Masuk' : 'Daftar sekarang' ?></button>
-                            <p class="form-note"><?= $page === 'login' ? 'Belum punya akun? ' . '<a href="?page=register">Daftar di sini</a>' : 'Sudah punya akun? ' . '<a href="?page=login">Masuk</a>' ?></p>
-                        </form>
-                    </section><?php layoutEnd();
-                                                                                                                                                                                exit;
-                                                                                                                                                                            }
+    <div class="page-wrap">
+        <?php if ($flash): ?>
+            <div class="alert <?= e($flash['type']) ?>"><?= e($flash['message']) ?></div>
+        <?php endif;
+}
+
+function layoutEnd(?array $user = null): void
+{
+    if ($user && $user['role'] !== 'customer') {
+        echo '</div></main>';
+    } else {
+        ?>
+        </div>
+        <footer>
+            <div>
+                <a class="brand" href="?page=home">
+                    <span class="brand-mark"><img src="assets/image/logo.png" alt="Logo Rumah Pitik"></span>
+                    <span>Rumah <b>Pitik</b></span>
+                </a>
+                <p>Produk segar dari peternakan dan kebun<br>untuk keluarga Indonesia.</p>
+            </div>
+            <div>
+                <b>Jelajahi</b>
+                <a href="?page=products">Katalog produk</a>
+                <a href="?page=about">Tentang Kami</a>
+                <a href="?page=home#how">Cara pesan</a>
+            </div>
+            <div>
+                <b>Hubungi kami</b>
+                <span>WhatsApp 0812-3456-7890</span>
+                <span>Senin - Sabtu, 08.00 - 17.00</span>
+            </div>
+        </footer>
+        <?php
+    }
+    echo '</body></html>';
+}
+
+if ($page === 'login' || $page === 'register') {
+    layoutStart($page === 'login' ? 'Masuk' : 'Daftar');
+    ?>
+    <section class="auth-shell">
+        <div class="auth-copy">
+            <span class="eyebrow">RUMAH PITIK</span>
+            <h1><?= $page === 'login' ? 'Selamat datang kembali.' : 'Mulai belanja lebih mudah.' ?></h1>
+            <p>Akses katalog segar, pesanan, dan informasi stok dalam satu tempat.</p>
+        </div>
+        <form class="auth-card" method="post">
+            <h2><?= $page === 'login' ? 'Masuk ke akun' : 'Buat akun pelanggan' ?></h2>
+            <input type="hidden" name="action" value="<?= $page ?>">
+            <?php if ($page === 'register'): ?>
+                <label>Nama lengkap<input required name="name"></label>
+                <label>Nomor telepon<input required name="phone"></label>
+                <label>Alamat<textarea required name="address" rows="3"></textarea></label>
+            <?php endif; ?>
+            <label>Email<input required type="email" name="email"></label>
+            <label>Password<input required type="password" name="password"></label>
+            <button class="button primary wide"><?= $page === 'login' ? 'Masuk' : 'Daftar sekarang' ?></button>
+            <p class="form-note">
+                <?= $page === 'login'
+                    ? 'Belum punya akun? <a href="?page=register">Daftar di sini</a>'
+                    : 'Sudah punya akun? <a href="?page=login">Masuk</a>' ?>
+            </p>
+        </form>
+    </section>
+    <?php
+    layoutEnd();
+    exit;
+}
 
                                                                                                                                                                             if ($page === 'about') {
                                                                                                                                                                                 include __DIR__ . '/views/customer/tentang-kami.php';
@@ -503,20 +633,44 @@ function layoutStart(string $title, ?array $user = null): void
                                                                                                                                                                                         }
 
                                                                                                                                                                                         if ($page === 'product') {
-                                                                                                                                                                                            $stmt = db()->prepare('SELECT p.*, c.name category_name FROM products p JOIN categories c ON c.id=p.category_id WHERE p.id=? AND p.is_active=1');
-                                                                                                                                                                                            $stmt->execute([(int) $_GET['id']]);
-                                                                                                                                                                                            $product = $stmt->fetch();
-                                                                                                                                                                                            if (!$product) redirect('?page=products');
-                                                                                                                                                                                            layoutStart($product['name'], $user); ?><section class="detail">
-                        <div class="detail-image"><img src="<?= e(productImage($product['image'])) ?>" alt="<?= e($product['name']) ?>"></div>
-                        <div class="detail-copy"><span class="eyebrow"><?= e($product['category_name']) ?></span>
-                            <h1><?= e($product['name']) ?></h1><strong class="price-large"><?= money($product['price']) ?> <small>/ <?= e($product['unit']) ?></small></strong>
-                            <p><?= e($product['description']) ?></p>
-                            <div class="stock-line <?= $product['stock'] ? '' : 'out' ?>">● <?= $product['stock'] ? 'Stok tersedia: ' . $product['stock'] . ' ' . $product['unit'] : 'Stok habis' ?></div><?php if ($product['stock']): ?><form method="post" class="buy-form"><input type="hidden" name="action" value="add_cart"><input type="hidden" name="product_id" value="<?= $product['id'] ?>"><input type="hidden" name="redirect" value="?page=cart"><input type="number" name="quantity" value="1" min="1" max="<?= $product['stock'] ?>"><button class="button primary">Tambah ke keranjang →</button></form><?php endif; ?>
-                        </div>
-                    </section><?php layoutEnd($user);
-                                                                                                                                                                                            exit;
-                                                                                                                                                                                        }
+    $stmt = db()->prepare('SELECT p.*, c.name category_name FROM products p JOIN categories c ON c.id=p.category_id WHERE p.id=? AND p.is_active=1');
+    $stmt->execute([(int) $_GET['id']]);
+    $product = $stmt->fetch();
+    if (!$product) redirect('?page=products');
+
+    layoutStart($product['name'], $user);
+    ?>
+    <section class="detail">
+        <div class="detail-image">
+            <img src="<?= e(productImage($product['image'])) ?>" alt="<?= e($product['name']) ?>">
+        </div>
+        <div class="detail-copy">
+            <span class="eyebrow"><?= e($product['category_name']) ?></span>
+            <h1><?= e($product['name']) ?></h1>
+            <strong class="price-large"><?= money($product['price']) ?> <small>/ <?= e($product['unit']) ?></small></strong>
+            <p><?= e($product['description']) ?></p>
+            <div class="stock-line <?= $product['stock'] ? '' : 'out' ?>">
+                ● <?= $product['stock'] ? 'Stok tersedia: ' . $product['stock'] . ' ' . $product['unit'] : 'Stok habis' ?>
+            </div>
+            <?php if ($product['stock']): ?>
+                <form method="post" class="buy-form js-buy-form">
+                    <input type="hidden" name="action" value="add_cart">
+                    <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                    <input type="hidden" name="redirect" value="?page=product&id=<?= (int) $product['id'] ?>">
+                    <div class="detail-qty-control">
+                        <button type="button" class="btn-qty-detail" data-action="minus" aria-label="Kurang">&minus;</button>
+                        <input type="number" name="quantity" class="qty-detail-input" value="1" min="1" max="<?= (int) $product['stock'] ?>">
+                        <button type="button" class="btn-qty-detail" data-action="plus" aria-label="Tambah">+</button>
+                    </div>
+                    <button type="submit" class="button primary btn-add-cart">Tambah ke keranjang →</button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </section>
+    <?php
+    layoutEnd($user);
+    exit;
+}
 
                                                                                                                                                                                         if ($page === 'cart' || $page === 'checkout' || $page === 'orders') {
                                                                                                                                                                                             $user = requireLogin();
@@ -748,7 +902,14 @@ function layoutStart(string $title, ?array $user = null): void
                 include __DIR__ . '/views/admin/products.php';
 
             } elseif ($tab === 'orders') {
-                $sql    = 'SELECT o.*, u.name, u.phone FROM orders o JOIN users u ON u.id=o.user_id WHERE 1=1';
+                $sql    = "SELECT o.*, 
+                                  COALESCE(NULLIF(o.customer_name, ''), u.name) AS customer_name,
+                                  COALESCE(NULLIF(o.phone, ''), u.phone) AS customer_phone,
+                                  u.name AS user_name, 
+                                  u.email AS user_email 
+                           FROM orders o 
+                           LEFT JOIN users u ON u.id=o.user_id 
+                           WHERE 1=1";
                 $params = [];
                 if (!empty($_GET['status_filter'])) {
                     $sql    .= ' AND o.status = ?';
@@ -766,6 +927,26 @@ function layoutStart(string $title, ?array $user = null): void
                 $stmt = db()->prepare($sql);
                 $stmt->execute($params);
                 $orders = $stmt->fetchAll();
+
+                $orderIds = array_column($orders, 'id');
+                $orderItems = [];
+                if (!empty($orderIds)) {
+                    $inClause = implode(',', array_fill(0, count($orderIds), '?'));
+                    $stmtItems = db()->prepare("
+                        SELECT od.*, p.name AS product_name, p.unit, p.image, p.price AS current_product_price
+                        FROM order_details od
+                        LEFT JOIN products p ON p.id = od.product_id
+                        WHERE od.order_id IN ($inClause)
+                        ORDER BY od.id ASC
+                    ");
+                    $stmtItems->execute($orderIds);
+                    foreach ($stmtItems->fetchAll() as $item) {
+                        $item['image_url'] = productImage($item['image'] ?? '');
+                        $item['formatted_price'] = money($item['price']);
+                        $item['formatted_subtotal'] = money($item['subtotal']);
+                        $orderItems[$item['order_id']][] = $item;
+                    }
+                }
 
                 include __DIR__ . '/views/admin/orders.php';
 

@@ -46,10 +46,10 @@ include __DIR__ . '/../layout/header.php';
 
         <!-- Buy Form -->
         <?php if ($product['stock'] > 0): ?>
-        <form method="post" class="buy-form">
+        <form method="post" class="buy-form js-buy-form">
             <input type="hidden" name="action"     value="add_cart">
             <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-            <input type="hidden" name="redirect"   value="?page=cart">
+            <input type="hidden" name="redirect"   value="?page=product&id=<?= $product['id'] ?>">
 
             <div class="qty-wrapper" style="display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden">
                 <button type="button" data-action="minus" class="btn btn-sm btn-outline" style="border:0;border-radius:0;height:44px">

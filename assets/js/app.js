@@ -105,4 +105,131 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ── Modern Toast Notification ── */
+    window.showToast = function(message, type = 'success', actionUrl = '', actionText = 'Lihat Keranjang →') {
+        let container = document.getElementById('rp-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'rp-toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `rp-toast rp-toast-${type}`;
+
+        let iconChar = '✓';
+        if (type === 'warning') iconChar = '!';
+        if (type === 'danger') iconChar = '✕';
+
+        let actionHtml = '';
+        if (actionUrl) {
+            actionHtml = `<a href="${actionUrl}" class="rp-toast-link">${actionText}</a>`;
+        }
+
+        toast.innerHTML = `
+            <div class="rp-toast-content">
+                <div class="rp-toast-icon">${iconChar}</div>
+                <div class="rp-toast-text">
+                    <span>${message}</span>
+                    ${actionHtml}
+                </div>
+            </div>
+            <button type="button" class="rp-toast-close" aria-label="Tutup">&times;</button>
+        `;
+
+        container.appendChild(toast);
+
+        function removeToast() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(40px) scale(0.95)';
+            setTimeout(() => toast.remove(), 300);
+        }
+
+        const closeBtn = toast.querySelector('.rp-toast-close');
+        if (closeBtn) closeBtn.addEventListener('click', removeToast);
+
+        setTimeout(removeToast, 4500);
+    };
+
+    /* ── AJAX Add to Cart Interception ── */
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        const actionInput = form.querySelector('input[name="action"]');
+        if (!actionInput || actionInput.value !== 'add_cart') return;
+
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('button[type="submit"], .btn-add-cart, button.primary');
+        const originalContent = submitBtn ? submitBtn.innerHTML : '';
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Menambahkan...</span>';
+        }
+
+        const formData = new FormData(form);
+
+        fetch('index.php', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(res => {
+            if (!res.ok && res.status !== 400 && res.status !== 401 && res.status !== 403) {
+                throw new Error('HTTP ' + res.status);
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (data.ok) {
+                const badges = document.querySelectorAll('.cart-link span, .badge, .cart-badge');
+                badges.forEach(badge => {
+                    badge.textContent = data.cartCount;
+                    badge.classList.remove('cart-bump');
+                    void badge.offsetWidth;
+                    badge.classList.add('cart-bump');
+                });
+
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<span>✓ Masuk Keranjang</span>';
+                    submitBtn.classList.add('btn-added');
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalContent;
+                        submitBtn.classList.remove('btn-added');
+                    }, 1600);
+                }
+
+                showToast(data.message || 'Produk berhasil masuk ke keranjang.', 'success', '?page=cart', 'Lihat Keranjang →');
+            } else {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
+                }
+
+                if (data.requires_login) {
+                    showToast(data.message || 'Silakan login terlebih dahulu.', 'warning', data.redirect || '?page=login', 'Masuk Akun');
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1400);
+                    }
+                } else {
+                    showToast(data.message || 'Gagal menambahkan produk.', 'danger');
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Add to cart error:', err);
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+            }
+            showToast('Terjadi gangguan jaringan. Silakan coba lagi.', 'danger');
+        });
+    });
+
 });

@@ -1495,3 +1495,102 @@ h3 { font-size: 1.25rem; }
     .order-card { grid-template-columns: 1fr; }
     .product-image { height: 200px; }
 }
+
+/* ── Toast Notification & Cart Animation ── */
+#rp-toast-container {
+    position: fixed;
+    top: 90px;
+    right: 24px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    width: calc(100vw - 48px);
+    pointer-events: none;
+}
+
+.rp-toast {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(38, 51, 42, 0.16), 0 2px 6px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--green);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    font-size: 14px;
+    color: var(--ink);
+    pointer-events: auto;
+    animation: rpToastSlideIn .3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: opacity .3s, transform .3s;
+}
+
+.rp-toast.rp-toast-warning { border-left-color: #f59e0b; }
+.rp-toast.rp-toast-danger { border-left-color: var(--red); }
+
+.rp-toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.rp-toast-icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #edf3e9;
+    color: var(--green);
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.rp-toast-warning .rp-toast-icon { background: #fef3c7; color: #b45309; }
+.rp-toast-danger .rp-toast-icon { background: #fee2e2; color: var(--red); }
+
+.rp-toast-text { line-height: 1.4; }
+.rp-toast-link {
+    display: inline-block;
+    color: var(--green);
+    font-weight: 700;
+    margin-left: 6px;
+    white-space: nowrap;
+    text-decoration: underline;
+}
+
+.rp-toast-close {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.rp-toast-close:hover { color: var(--ink); }
+
+@keyframes rpToastSlideIn {
+    from { opacity: 0; transform: translateX(40px) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes cartBump {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.cart-bump {
+    animation: cartBump .45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-added {
+    background: #21432a !important;
+}

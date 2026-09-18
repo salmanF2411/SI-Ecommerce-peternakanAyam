@@ -1004,6 +1004,168 @@ h3 { font-size: 1.25rem; }
     border-bottom: 1px solid var(--line);
 }
 
+/* ─── Payment Method Options ─────────────────────────────────────────────── */
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.payment-option {
+    cursor: pointer;
+    display: block;
+}
+
+.payment-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.payment-option-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 2px solid var(--line);
+    border-radius: var(--radius-md, 8px);
+    background: #fff;
+    transition: all 0.25s ease;
+}
+
+.payment-option-card:hover {
+    border-color: var(--green-2);
+    background: #f8faf6;
+}
+
+.payment-option input[type="radio"]:checked + .payment-option-card {
+    border-color: var(--green);
+    background: #edf5e8;
+    box-shadow: 0 0 0 1px var(--green);
+}
+
+.payment-option-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--green);
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+}
+
+.payment-option input[type="radio"]:checked + .payment-option-card .payment-option-icon {
+    background: var(--green);
+    color: #fff;
+}
+
+.payment-option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.payment-option-text strong {
+    font-size: 15px;
+    color: var(--ink);
+}
+
+.payment-option-text small {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.payment-option-check {
+    font-size: 20px;
+    color: var(--line);
+    transition: all 0.25s ease;
+}
+
+.payment-option input[type="radio"]:checked + .payment-option-card .payment-option-check {
+    color: var(--green);
+}
+
+/* ─── QRIS Panel ─────────────────────────────────────────────────────────── */
+.qris-panel {
+    margin-top: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md, 8px);
+    background: #fff;
+    overflow: hidden;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.qris-image-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 24px 24px 16px;
+    background: #fafcf7;
+}
+
+.qris-image {
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md, 8px);
+    box-shadow: 0 4px 20px rgba(47, 93, 58, 0.12);
+}
+
+.qris-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 20px;
+    background: #edf5e8;
+    border-top: 1px solid #d6e8cb;
+    color: var(--green);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.qris-info i {
+    font-size: 16px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* ─── COD Panel ──────────────────────────────────────────────────────────── */
+.cod-panel {
+    margin-top: 16px;
+    animation: slideDown 0.3s ease;
+}
+
+.cod-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #fff9eb;
+    border: 1px solid #f0e4c0;
+    border-radius: var(--radius-md, 8px);
+    color: #7a6521;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.cod-info i {
+    font-size: 18px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    color: #b5941e;
+}
+
 /* ─── Orders List ────────────────────────────────────────────────────────── */
 .order-list { padding-bottom: 80px; }
 

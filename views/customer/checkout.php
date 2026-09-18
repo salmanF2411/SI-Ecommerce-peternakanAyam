@@ -41,17 +41,78 @@ include __DIR__ . '/../layout/header.php';
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="co-payment">Metode pembayaran</label>
-            <select class="form-control" id="co-payment" name="payment_method">
-                <option>Transfer Bank</option>
-                <option>Cash on Delivery (COD)</option>
-                <option>Bayar di Tempat</option>
-            </select>
-            <small style="color:var(--muted);font-size:12px;margin-top:6px;display:block">
-                <i class="fa fa-info-circle"></i>
-                Pembayaran dikonfirmasi langsung bersama admin.
-            </small>
+            <label class="form-label">Metode pembayaran</label>
+
+            <div class="payment-options">
+                <!-- QRIS Option -->
+                <label class="payment-option" id="payment-qris-label">
+                    <input type="radio" name="payment_method" value="QRIS" id="pay-qris" checked>
+                    <span class="payment-option-card">
+                        <span class="payment-option-icon"><i class="fa fa-qrcode"></i></span>
+                        <span class="payment-option-text">
+                            <strong>QRIS</strong>
+                            <small>Scan QR untuk pembayaran</small>
+                        </span>
+                        <span class="payment-option-check"><i class="fa fa-check-circle"></i></span>
+                    </span>
+                </label>
+
+                <!-- Bayar di Tempat Option -->
+                <label class="payment-option" id="payment-cod-label">
+                    <input type="radio" name="payment_method" value="Bayar di Tempat" id="pay-cod">
+                    <span class="payment-option-card">
+                        <span class="payment-option-icon"><i class="fa fa-hand-holding-usd"></i></span>
+                        <span class="payment-option-text">
+                            <strong>Bayar di Tempat</strong>
+                            <small>Bayar saat pesanan diterima</small>
+                        </span>
+                        <span class="payment-option-check"><i class="fa fa-check-circle"></i></span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- QRIS Image & Info (shown when QRIS is selected) -->
+            <div class="qris-panel" id="qris-panel">
+                <div class="qris-image-wrapper">
+                    <img src="assets/image/Qris.jpeg" alt="QRIS Pembayaran" class="qris-image">
+                </div>
+                <div class="qris-info">
+                    <i class="fa fa-info-circle"></i>
+                    <span>Tunjukkan bukti pembayaran ketika Anda menerima pesanan.</span>
+                </div>
+            </div>
+
+            <!-- COD Info (shown when Bayar di Tempat is selected) -->
+            <div class="cod-panel" id="cod-panel" style="display:none">
+                <div class="cod-info">
+                    <i class="fa fa-wallet"></i>
+                    <span>Siapkan uang pas saat pesanan tiba. Pembayaran dilakukan langsung kepada kurir.</span>
+                </div>
+            </div>
         </div>
+
+        <script>
+        (function() {
+            const qrisRadio  = document.getElementById('pay-qris');
+            const codRadio   = document.getElementById('pay-cod');
+            const qrisPanel  = document.getElementById('qris-panel');
+            const codPanel   = document.getElementById('cod-panel');
+
+            function togglePayment() {
+                if (qrisRadio.checked) {
+                    qrisPanel.style.display = 'block';
+                    codPanel.style.display  = 'none';
+                } else {
+                    qrisPanel.style.display = 'none';
+                    codPanel.style.display  = 'block';
+                }
+            }
+
+            qrisRadio.addEventListener('change', togglePayment);
+            codRadio.addEventListener('change', togglePayment);
+            togglePayment();
+        })();
+        </script>
 
         <div class="form-group">
             <label class="form-label" for="co-notes">Catatan <span

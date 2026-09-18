@@ -92,26 +92,26 @@ include __DIR__ . '/../layout/header.php';
         </div>
 
         <script>
-        (function() {
-            const qrisRadio  = document.getElementById('pay-qris');
-            const codRadio   = document.getElementById('pay-cod');
-            const qrisPanel  = document.getElementById('qris-panel');
-            const codPanel   = document.getElementById('cod-panel');
+            (function () {
+                const qrisRadio = document.getElementById('pay-qris');
+                const codRadio = document.getElementById('pay-cod');
+                const qrisPanel = document.getElementById('qris-panel');
+                const codPanel = document.getElementById('cod-panel');
 
-            function togglePayment() {
-                if (qrisRadio.checked) {
-                    qrisPanel.style.display = 'block';
-                    codPanel.style.display  = 'none';
-                } else {
-                    qrisPanel.style.display = 'none';
-                    codPanel.style.display  = 'block';
+                function togglePayment() {
+                    if (qrisRadio.checked) {
+                        qrisPanel.style.display = 'block';
+                        codPanel.style.display = 'none';
+                    } else {
+                        qrisPanel.style.display = 'none';
+                        codPanel.style.display = 'block';
+                    }
                 }
-            }
 
-            qrisRadio.addEventListener('change', togglePayment);
-            codRadio.addEventListener('change', togglePayment);
-            togglePayment();
-        })();
+                qrisRadio.addEventListener('change', togglePayment);
+                codRadio.addEventListener('change', togglePayment);
+                togglePayment();
+            })();
         </script>
 
         <div class="form-group">
@@ -131,10 +131,10 @@ include __DIR__ . '/../layout/header.php';
         <h3><i class="fa fa-receipt" style="color:var(--green);margin-right:8px"></i>Ringkasan Pesanan</h3>
 
         <?php foreach ($items as $item): ?>
-                <div class="summary-row">
-                    <span><?= $item['quantity'] ?> × <?= e($item['product']['name']) ?></span>
-                    <b><?= money($item['subtotal']) ?></b>
-                </div>
+            <div class="summary-row">
+                <span><?= $item['quantity'] ?> × <?= e($item['product']['name']) ?></span>
+                <b><?= money($item['subtotal']) ?></b>
+            </div>
         <?php endforeach; ?>
 
         <div class="summary-row summary-total" style="margin-top:8px">

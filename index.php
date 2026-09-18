@@ -245,13 +245,30 @@ if ($action === 'update_order' && in_array((currentUser()['role'] ?? ''), ['admi
         flash('warning', 'Owner hanya memiliki akses pemantauan.');
         redirect('?page=dashboard');
     }
+    // Ambil status sebelumnya untuk mencegah duplikasi stok
+    $prevStatusStmt = db()->prepare('SELECT status FROM orders WHERE id = ?');
+    $prevStatusStmt->execute([$orderId]);
+    $prevStatus = $prevStatusStmt->fetchColumn();
+
     db()->prepare('UPDATE orders SET status = ? WHERE id = ?')->execute([$status, $orderId]);
-    if ($status === 'Diproses') {
+
+    // Kurangi stok hanya saat status berubah ke 'Selesai' DAN sebelumnya bukan 'Selesai'
+    if ($status === 'Selesai' && $prevStatus !== 'Selesai') {
         $details = db()->prepare('SELECT * FROM order_details WHERE order_id = ?');
         $details->execute([$orderId]);
         foreach ($details->fetchAll() as $detail) {
             db()->prepare('UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?')->execute([$detail['quantity'], $detail['product_id'], $detail['quantity']]);
-            db()->prepare("INSERT INTO stock_transactions (product_id,user_id,type,quantity,note) VALUES (?,?, 'Keluar', ?, ?)")->execute([$detail['product_id'], $user['id'], $detail['quantity'], 'Pesanan #' . $orderId]);
+            db()->prepare("INSERT INTO stock_transactions (product_id,user_id,type,quantity,note) VALUES (?,?, 'Keluar', ?, ?)")->execute([$detail['product_id'], $user['id'], $detail['quantity'], 'Pesanan selesai #' . $orderId]);
+        }
+    }
+
+    // Kembalikan stok jika pesanan dibatalkan setelah sebelumnya sudah 'Selesai'
+    if ($status === 'Dibatalkan' && $prevStatus === 'Selesai') {
+        $details = db()->prepare('SELECT * FROM order_details WHERE order_id = ?');
+        $details->execute([$orderId]);
+        foreach ($details->fetchAll() as $detail) {
+            db()->prepare('UPDATE products SET stock = stock + ? WHERE id = ?')->execute([$detail['quantity'], $detail['product_id']]);
+            db()->prepare("INSERT INTO stock_transactions (product_id,user_id,type,quantity,note) VALUES (?,?, 'Masuk', ?, ?)")->execute([$detail['product_id'], $user['id'], $detail['quantity'], 'Pembatalan pesanan #' . $orderId]);
         }
     }
     logActivity('Memperbarui status pesanan #' . $orderId . ' menjadi ' . $status);

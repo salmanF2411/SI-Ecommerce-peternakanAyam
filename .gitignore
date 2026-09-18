@@ -6,3 +6,4 @@ schema.sql
 composer.json
 composer.lock
 vendor/
+test_blackbox.php

@@ -131,10 +131,10 @@ include __DIR__ . '/../layout/header.php';
         <h3><i class="fa fa-receipt" style="color:var(--green);margin-right:8px"></i>Ringkasan Pesanan</h3>
 
         <?php foreach ($items as $item): ?>
-            <div class="summary-row">
-                <span><?= $item['quantity'] ?> × <?= e($item['product']['name']) ?></span>
-                <b><?= money($item['subtotal']) ?></b>
-            </div>
+                <div class="summary-row">
+                    <span><?= $item['quantity'] ?> × <?= e($item['product']['name']) ?></span>
+                    <b><?= money($item['subtotal']) ?></b>
+                </div>
         <?php endforeach; ?>
 
         <div class="summary-row summary-total" style="margin-top:8px">

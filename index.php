@@ -337,7 +337,7 @@ if ($action === 'add_stock' && currentUser() && currentUser()['role'] === 'admin
         $prod = $stmt->fetch();
         if ($prod) {
             db()->prepare('UPDATE products SET stock = stock + ? WHERE id = ?')->execute([$quantity, $productId]);
-            recordStockMovement($productId, (int)$user['id'], 'Masuk', $quantity, $note ?: 'Penambahan stok manual');
+            recordStockMovement($productId, (int) $user['id'], 'Masuk', $quantity, $note ?: 'Penambahan stok manual');
             logActivity('Menambah stok ' . $prod['name'] . ' (+' . $quantity . ')');
             flash('success', 'Stok ' . $prod['name'] . ' berhasil ditambahkan.');
         } else {
@@ -353,19 +353,19 @@ if ($action === 'add_stock' && currentUser() && currentUser()['role'] === 'admin
 if ($page === 'export-sales' && currentUser() && in_array(currentUser()['role'], ['admin', 'owner'], true)) {
     requireStaff();
 
-    $period   = $_GET['period']    ?? 'bulanan';
+    $period = $_GET['period'] ?? 'bulanan';
     $dateFrom = $_GET['date_from'] ?? date('Y-m-01');
-    $dateTo   = $_GET['date_to']   ?? date('Y-m-d');
+    $dateTo = $_GET['date_to'] ?? date('Y-m-d');
 
     if ($period === 'harian') {
         $groupBy = "DATE(o.created_at)";
-        $label   = "DATE_FORMAT(o.created_at,'%d %M %Y')";
+        $label = "DATE_FORMAT(o.created_at,'%d %M %Y')";
     } elseif ($period === 'tahunan') {
         $groupBy = "YEAR(o.created_at)";
-        $label   = "YEAR(o.created_at)";
+        $label = "YEAR(o.created_at)";
     } else {
         $groupBy = "DATE_FORMAT(o.created_at,'%Y-%m')";
-        $label   = "DATE_FORMAT(o.created_at,'%M %Y')";
+        $label = "DATE_FORMAT(o.created_at,'%M %Y')";
     }
 
     $stmt = db()->prepare("
@@ -384,7 +384,7 @@ if ($page === 'export-sales' && currentUser() && in_array(currentUser()['role'],
     $stmt->execute([$dateFrom, $dateTo]);
     $rows = $stmt->fetchAll();
 
-    $ss    = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $ss = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     $sheet = $ss->getActiveSheet();
     $sheet->setTitle('Laporan Penjualan');
 
@@ -392,46 +392,50 @@ if ($page === 'export-sales' && currentUser() && in_array(currentUser()['role'],
     $sheet->mergeCells('A1:D1');
     $sheet->setCellValue('A1', 'LAPORAN PENJUALAN — CV RUMAH PITIK');
     $sheet->getStyle('A1')->applyFromArray([
-        'font'      => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2F5D3A']],
+        'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2F5D3A']],
         'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
     ]);
     $sheet->mergeCells('A2:D2');
     $sheet->setCellValue('A2', 'Periode: ' . $dateFrom . ' s/d ' . $dateTo . '  |  Dicetak: ' . date('d/m/Y H:i'));
     $sheet->getStyle('A2')->applyFromArray([
-        'font'      => ['size' => 10, 'italic' => true, 'color' => ['rgb' => '777777']],
+        'font' => ['size' => 10, 'italic' => true, 'color' => ['rgb' => '777777']],
         'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
     ]);
 
     // Header kolom
     $cols = ['A' => 'Periode', 'B' => 'Total Transaksi', 'C' => 'Produk Terjual (unit)', 'D' => 'Total Pendapatan (Rp)'];
-    foreach ($cols as $c => $h) { $sheet->setCellValue($c . '4', $h); }
+    foreach ($cols as $c => $h) {
+        $sheet->setCellValue($c . '4', $h);
+    }
     $sheet->getStyle('A4:D4')->applyFromArray([
-        'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-        'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2F5D3A']],
+        'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+        'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2F5D3A']],
         'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
-        'borders'   => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
+        'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
     ]);
 
     // Data
     $r = 5;
     foreach ($rows as $row) {
         $sheet->setCellValue('A' . $r, $row['period']);
-        $sheet->setCellValue('B' . $r, (int)$row['transactions']);
-        $sheet->setCellValue('C' . $r, (int)$row['items_sold']);
-        $sheet->setCellValue('D' . $r, (float)$row['revenue']);
+        $sheet->setCellValue('B' . $r, (int) $row['transactions']);
+        $sheet->setCellValue('C' . $r, (int) $row['items_sold']);
+        $sheet->setCellValue('D' . $r, (float) $row['revenue']);
         $sheet->getStyle('D' . $r)->getNumberFormat()->setFormatCode('#,##0');
         if ($r % 2 === 0) {
-            $sheet->getStyle('A'.$r.':D'.$r)->applyFromArray([
+            $sheet->getStyle('A' . $r . ':D' . $r)->applyFromArray([
                 'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F0F7F1']],
             ]);
         }
-        $sheet->getStyle('A'.$r.':D'.$r)->applyFromArray([
+        $sheet->getStyle('A' . $r . ':D' . $r)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'DDDDDD']]],
         ]);
         $r++;
     }
-    foreach (['A','B','C','D'] as $c) { $sheet->getColumnDimension($c)->setAutoSize(true); }
-    $sheet->getStyle('B5:D'.($r-1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+    foreach (['A', 'B', 'C', 'D'] as $c) {
+        $sheet->getColumnDimension($c)->setAutoSize(true);
+    }
+    $sheet->getStyle('B5:D' . ($r - 1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
     $sheet->getRowDimension(4)->setRowHeight(20);
 
     $filename = 'Laporan_Penjualan_' . $dateFrom . '_sd_' . $dateTo . '.xlsx';
@@ -458,7 +462,7 @@ if ($page === 'export-stock' && currentUser() && in_array(currentUser()['role'],
         ORDER BY p.name ASC
     ")->fetchAll();
 
-    $ss    = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $ss = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     $sheet = $ss->getActiveSheet();
     $sheet->setTitle('Laporan Stok');
 
@@ -466,55 +470,66 @@ if ($page === 'export-stock' && currentUser() && in_array(currentUser()['role'],
     $sheet->mergeCells('A1:G1');
     $sheet->setCellValue('A1', 'LAPORAN STOK PRODUK — CV RUMAH PITIK');
     $sheet->getStyle('A1')->applyFromArray([
-        'font'      => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2F5D3A']],
+        'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2F5D3A']],
         'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
     ]);
     $sheet->mergeCells('A2:G2');
     $sheet->setCellValue('A2', 'Tanggal Cetak: ' . date('d/m/Y H:i'));
     $sheet->getStyle('A2')->applyFromArray([
-        'font'      => ['size' => 10, 'italic' => true, 'color' => ['rgb' => '777777']],
+        'font' => ['size' => 10, 'italic' => true, 'color' => ['rgb' => '777777']],
         'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
     ]);
 
     // Header kolom
     $cols = ['A' => 'Produk', 'B' => 'Kategori', 'C' => 'Stok Masuk', 'D' => 'Stok Keluar', 'E' => 'Stok Saat Ini', 'F' => 'Satuan', 'G' => 'Status'];
-    foreach ($cols as $c => $h) { $sheet->setCellValue($c . '4', $h); }
+    foreach ($cols as $c => $h) {
+        $sheet->setCellValue($c . '4', $h);
+    }
     $sheet->getStyle('A4:G4')->applyFromArray([
-        'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-        'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2F5D3A']],
+        'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+        'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '2F5D3A']],
         'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
-        'borders'   => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
+        'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
     ]);
 
     // Data
     $r = 5;
     foreach ($stockReport as $row) {
-        if ($row['stock'] == 0)      { $status = 'Habis';    $sc = 'C0392B'; }
-        elseif ($row['stock'] <= 10) { $status = 'Menipis';  $sc = 'E67E22'; }
-        else                         { $status = 'Tersedia'; $sc = '27AE60'; }
+        if ($row['stock'] == 0) {
+            $status = 'Habis';
+            $sc = 'C0392B';
+        } elseif ($row['stock'] <= 10) {
+            $status = 'Menipis';
+            $sc = 'E67E22';
+        } else {
+            $status = 'Tersedia';
+            $sc = '27AE60';
+        }
 
-        $sheet->setCellValue('A'.$r, $row['name']);
-        $sheet->setCellValue('B'.$r, $row['category_name']);
-        $sheet->setCellValue('C'.$r, (int)$row['total_masuk']);
-        $sheet->setCellValue('D'.$r, (int)$row['total_keluar']);
-        $sheet->setCellValue('E'.$r, (int)$row['stock']);
-        $sheet->setCellValue('F'.$r, $row['unit']);
-        $sheet->setCellValue('G'.$r, $status);
-        $sheet->getStyle('G'.$r)->applyFromArray([
+        $sheet->setCellValue('A' . $r, $row['name']);
+        $sheet->setCellValue('B' . $r, $row['category_name']);
+        $sheet->setCellValue('C' . $r, (int) $row['total_masuk']);
+        $sheet->setCellValue('D' . $r, (int) $row['total_keluar']);
+        $sheet->setCellValue('E' . $r, (int) $row['stock']);
+        $sheet->setCellValue('F' . $r, $row['unit']);
+        $sheet->setCellValue('G' . $r, $status);
+        $sheet->getStyle('G' . $r)->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => $sc]],
         ]);
         if ($r % 2 === 0) {
-            $sheet->getStyle('A'.$r.':G'.$r)->applyFromArray([
+            $sheet->getStyle('A' . $r . ':G' . $r)->applyFromArray([
                 'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F0F7F1']],
             ]);
         }
-        $sheet->getStyle('A'.$r.':G'.$r)->applyFromArray([
+        $sheet->getStyle('A' . $r . ':G' . $r)->applyFromArray([
             'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'DDDDDD']]],
         ]);
         $r++;
     }
-    foreach (['A','B','C','D','E','F','G'] as $c) { $sheet->getColumnDimension($c)->setAutoSize(true); }
-    $sheet->getStyle('C5:E'.($r-1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G'] as $c) {
+        $sheet->getColumnDimension($c)->setAutoSize(true);
+    }
+    $sheet->getStyle('C5:E' . ($r - 1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     $sheet->getRowDimension(4)->setRowHeight(20);
 
     $filename = 'Laporan_Stok_' . date('Y-m-d') . '.xlsx';
@@ -635,15 +650,15 @@ if ($page === 'dashboard') {
     $tab = $_GET['tab'] ?? 'overview';
 
     $tabTitles = [
-        'overview'      => 'Dashboard',
-        'categories'    => 'Kategori Produk',
-        'products'      => 'Kelola Produk',
-        'customers'     => 'Data Pelanggan',
-        'orders'        => 'Pesanan',
-        'stock'         => 'Manajemen Stok',
-        'reports'       => 'Laporan Penjualan',
+        'overview' => 'Dashboard',
+        'categories' => 'Kategori Produk',
+        'products' => 'Kelola Produk',
+        'customers' => 'Data Pelanggan',
+        'orders' => 'Pesanan',
+        'stock' => 'Manajemen Stok',
+        'reports' => 'Laporan Penjualan',
         'reports-stock' => 'Laporan Stok',
-        'logs'          => 'Log Aktivitas',
+        'logs' => 'Log Aktivitas',
     ];
     $pageTitle = $tabTitles[$tab] ?? 'Dashboard';
 
@@ -810,9 +825,9 @@ if ($page === 'dashboard') {
     } else {
         $stats = [
             'products' => db()->query('SELECT COUNT(*) FROM products WHERE is_active=1')->fetchColumn(),
-            'orders'   => db()->query("SELECT COUNT(*) FROM orders WHERE status NOT IN ('Selesai','Dibatalkan')")->fetchColumn(),
-            'revenue'  => db()->query("SELECT COALESCE(SUM(total),0) FROM orders WHERE status='Selesai'")->fetchColumn(),
-            'stock'    => db()->query('SELECT COALESCE(SUM(stock),0) FROM products WHERE is_active=1')->fetchColumn(),
+            'orders' => db()->query("SELECT COUNT(*) FROM orders WHERE status NOT IN ('Selesai','Dibatalkan')")->fetchColumn(),
+            'revenue' => db()->query("SELECT COALESCE(SUM(total),0) FROM orders WHERE status='Selesai'")->fetchColumn(),
+            'stock' => db()->query('SELECT COALESCE(SUM(stock),0) FROM products WHERE is_active=1')->fetchColumn(),
         ];
         $recentOrders = db()->query('SELECT o.*, u.name FROM orders o JOIN users u ON u.id=o.user_id ORDER BY o.created_at DESC LIMIT 5')->fetchAll();
         $lowStock = db()->query('SELECT name, stock, unit FROM products WHERE is_active=1 ORDER BY stock ASC LIMIT 5')->fetchAll();

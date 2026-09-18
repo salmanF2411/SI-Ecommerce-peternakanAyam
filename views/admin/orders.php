@@ -668,8 +668,8 @@ foreach ($orders as $order) {
                         </td>
                         <td>
                             <div class="order-action-group">
-                                <button type="button" class="btn-detail" onclick="openOrderDetail(<?= (int) $order['id'] ?>)"
-                                    title="Lihat Rincian Pesanan">
+                                <button type="button" class="btn-detail"
+                                    onclick="openOrderDetail(<?= (int) $order['id'] ?>)" title="Lihat Rincian Pesanan">
                                     <i class="fa fa-eye"></i> Lihat Detail
                                 </button>
                                 <?php if ($user['role'] === 'admin'): ?>
